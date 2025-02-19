@@ -1,0 +1,17 @@
+CREATE TABLE Students (
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100),
+  GroupName VARCHAR(19),
+  AVGGrade DOUBLE,
+  Birthday DATE
+);
+
+INSERT INTO Students (Name, GroupName, AVGGrade, Birthday) 
+VALUES ("Name", "p35", 10.2, "975-01-01"),
+("NoName", "p33", 7.2, "1985-04-03"),
+("First", "p33", 7.8, "1995-09-03"),
+("Maybe", "p34", 4.6, "2011-02-01"),
+("Aboba", "p35", 9.9, "1985-07-02");
+
+SELECT * FROM Students ORDER BY Name ASC; 
+SELECT * FROM Students ORDER BY AVGGrade DESC; 
