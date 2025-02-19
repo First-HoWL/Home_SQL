@@ -3,15 +3,18 @@ CREATE TABLE Students (
   Name VARCHAR(100),
   GroupName VARCHAR(19),
   AVGGrade DOUBLE,
-  Birthday DATE
+  Birthday DATE,
+  EnterYear INT
 );
 
-INSERT INTO Students (Name, GroupName, AVGGrade, Birthday) 
-VALUES ("Name", "p35", 10.2, "975-01-01"),
-("NoName", "p33", 7.2, "1985-04-03"),
-("First", "p33", 7.8, "1995-09-03"),
-("Maybe", "p34", 4.6, "2011-02-01"),
-("Aboba", "p35", 9.9, "1985-07-02");
+INSERT INTO Students (Name, GroupName, AVGGrade, Birthday, EnterYear) 
+VALUES ("Name", "p35", 10.2, "975-01-01", 2),
+("NoName", "p33", 7.2, "1985-04-03", 4),
+("First", "p33", 10.8, "1995-09-03", 1),
+("Maybe", "p34", 4.6, "2011-02-01", 3),
+("Aboba", "p35", 9.9, "1985-07-02", 2);
 
-SELECT * FROM Students ORDER BY Name ASC; 
-SELECT * FROM Students ORDER BY AVGGrade DESC; 
+-- SELECT * FROM Students ORDER BY Name ASC; 
+-- SELECT * FROM Students ORDER BY AVGGrade DESC; 
+SELECT * FROM Students WHERE EnterYear IN ("2", "4");
+SELECT * FROM Students WHERE AVGGrade BETWEEN "8" AND "12"; 
