@@ -8,13 +8,13 @@ CREATE TABLE Students (
 );
 
 INSERT INTO Students (Name, GroupName, AVGGrade, Birthday, EnterYear) 
-VALUES ("Name", "p35", 10.2, "975-01-01", 2),
-("NoName", "p33", 7.2, "1985-04-03", 4),
-("First", "p33", 10.8, "1995-09-03", 1),
-("Maybe", "p34", 4.6, "2011-02-01", 3),
-("Aboba", "p35", 9.9, "1985-07-02", 2);
+VALUES ("Name", "p35", 10.2, "975-01-01", 2023),
+("NoName", "p33", 7.2, "1985-04-03", 2021),
+("First", "p33", 10.8, "1995-09-03", 2024),
+("Maybe", "p34", 4.6, "2011-02-01", 2022),
+("Aboba", "p35", 9.9, "1985-07-02", 2023);
 
 -- SELECT * FROM Students ORDER BY Name ASC; 
 -- SELECT * FROM Students ORDER BY AVGGrade DESC; 
-SELECT * FROM Students WHERE EnterYear IN ("2", "4");
+SELECT * FROM Students WHERE EnterYear IN ("2023", "2021");
 SELECT * FROM Students WHERE AVGGrade BETWEEN "8" AND "12"; 
