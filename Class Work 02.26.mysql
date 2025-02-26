@@ -1,0 +1,187 @@
+CREATE TABLE Departments (
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100)
+);
+
+CREATE TABLE Doctors (
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100),
+  Premium DECIMAL,
+  Salary DECIMAL,
+  Surname VARCHAR(100),
+  DepartmentID INT,
+  FOREIGN KEY (DepartmentID) REFERENCES Departments(ID)
+);
+CREATE TABLE Sponsors(
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100)
+);
+
+CREATE TABLE Donations (
+  ID INT AUTO_INCREMENT KEY,
+  Amount INT,
+  Dates DATE,
+  DepartmentID INT,
+  SponsorID INT,
+  FOREIGN KEY (SponsorID) REFERENCES Sponsors(ID),
+  FOREIGN KEY (DepartmentID) REFERENCES Departments(ID)
+);
+
+CREATE TABLE Wards (
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100),
+  DepartmentID INT,
+  FOREIGN KEY (DepartmentID) REFERENCES Departments(ID)
+);
+
+CREATE TABLE Specializations (
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100)
+);
+
+CREATE TABLE DoctorSpecializations (
+  ID INT AUTO_INCREMENT KEY,
+  DoctorID INT,
+  SpecializationID INT,
+  FOREIGN KEY (SpecializationID) REFERENCES Specializations(ID),
+  FOREIGN KEY (DoctorID) REFERENCES Doctors(ID)
+);
+
+CREATE TABLE Vocations(
+  ID INT AUTO_INCREMENT KEY,
+  EndDate Date,
+  StartDate Date,
+  DoctorID INT,
+  FOREIGN KEY (DoctorID) REFERENCES Doctors(ID)
+);
+
+CREATE TABLE Diseases(
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100),
+  Severity INT,
+  IsInfectious BOOL
+);
+
+CREATE TABLE Examination(
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100),
+  DayOfWeek VARCHAR(50),
+  TimeStart Time,
+  TimeEnd Time,
+  DoctorsID INT,
+  DiseasesID INT,
+  WardsID INT,
+  FOREIGN KEY (WardsID) REFERENCES Wards(ID),
+  FOREIGN KEY (DoctorsID) REFERENCES Doctors(ID),
+  FOREIGN KEY (DiseasesID) REFERENCES Diseases(ID)
+);
+
+-- Заполнение таблицы Departments
+INSERT INTO Departments (Name)
+VALUES
+  ('Cardiology'),
+  ('Neurology'),
+  ('Orthopedics'),
+  ('Pediatrics'),
+  ('Surgery');
+
+-- Заполнение таблицы Doctors
+INSERT INTO Doctors (Name, Premium, Salary, Surname, DepartmentID)
+VALUES
+  ('John', 500, 1200, 'Doe', 1),
+  ('Alice', 600, 1300, 'Smith', 2),
+  ('Bob', 400, 1100, 'Brown', 3),
+  ('Emma', 700, 1500, 'Davis', 4),
+  ('Liam', 550, 1400, 'Wilson', 5);
+
+-- Заполнение таблицы Sponsors
+INSERT INTO Sponsors (Name)
+VALUES
+  ('HealthCorp'),
+  ('MedFunds'),
+  ('LifeCare');
+
+-- Заполнение таблицы Donations
+INSERT INTO Donations (Amount, Dates, DepartmentID, SponsorID)
+VALUES
+  (10000, '2025-02-01', 1, 1),
+  (15000, '2025-02-05', 2, 2),
+  (20000, '2025-02-10', 3, 3),
+  (12000, '2025-02-15', 4, 1),
+  (18000, '2025-02-20', 5, 2);
+
+-- Заполнение таблицы Wards
+INSERT INTO Wards (Name, DepartmentID)
+VALUES
+  ('Cardiology Ward', 1),
+  ('Neurology Ward', 2),
+  ('Orthopedics Ward', 3),
+  ('Pediatrics Ward', 4),
+  ('Surgery Ward', 5);
+
+-- Заполнение таблицы Specializations
+INSERT INTO Specializations (Name)
+VALUES
+  ('Cardiologist'),
+  ('Neurologist'),
+  ('Orthopedic Surgeon'),
+  ('Pediatrician'),
+  ('Surgeon');
+
+-- Заполнение таблицы DoctorSpecializations
+INSERT INTO DoctorSpecializations (DoctorID, SpecializationID)
+VALUES
+  (1, 1),  -- John is a Cardiologist
+  (2, 2),  -- Alice is a Neurologist
+  (3, 3),  -- Bob is an Orthopedic Surgeon
+  (4, 4),  -- Emma is a Pediatrician
+  (5, 5);  -- Liam is a Surgeon
+
+-- Заполнение таблицы Diseases
+INSERT INTO Diseases (Name, Severity, IsInfectious)
+VALUES
+  ('Heart Attack', 10, 0),
+  ('Stroke', 9, 0),
+  ('Fracture', 5, 0),
+  ('Flu', 3, 1),
+  ('Appendicitis', 7, 0);
+
+-- Заполнение таблицы Examination
+INSERT INTO Examination (Name, DayOfWeek, TimeStart, TimeEnd, DoctorsID, DiseasesID, WardsID)
+VALUES
+  ('Cardiology Exam', 'Monday', '09:00', '12:00', 1, 1, 1),
+  ('Neurology Exam', 'Tuesday', '10:00', '13:00', 2, 2, 2),
+  ('Orthopedic Exam', 'Wednesday', '11:00', '14:00', 3, 3, 3),
+  ('Pediatrics Exam', 'Thursday', '08:00', '11:00', 4, 4, 4),
+  ('Surgery Exam', 'Friday', '14:00', '17:00', 5, 5, 5);
+
+-- Заполнение таблицы Vocations
+INSERT INTO Vocations (StartDate, EndDate, DoctorID)
+VALUES
+  ('2025-01-01', '2025-03-15', 1),
+  ('2025-01-10', '2025-01-20', 2),
+  ('2025-01-15', '2025-04-25', 3),
+  ('2025-01-20', '2025-02-25', 4),
+  ('2025-02-01', '2025-02-10', 5);
+
+-- 1
+SELECT CONCAT(Doctors.Name, " ", Doctors.Surname) AS Doctor, Specializations.Name AS Specialization
+FROM Doctors, Specializations, DoctorSpecializations 
+WHERE Specializations.ID = DoctorSpecializations.SpecializationID
+AND DoctorSpecializations.DoctorID = Doctors.ID;
+
+-- 2
+SELECT Doctors.Surname, Doctors.Salary + Doctors.Premium FROM Doctors, Vocations 
+WHERE Doctors.ID = Vocations.DoctorID AND Vocations.EndDate < CURDATE();
+
+
+
+SELECT Departments.Name, Sponsors.Name, Donations.Amount FROM Sponsors, Donations, Departments 
+WHERE Departments.ID = Donations.DepartmentID 
+AND Sponsors.ID = Donations.SponsorID
+AND Donations.Dates > "2025-01-24";
+
+SELECT Departments.Name, Doctors.Name, Donations.Amount FROM Doctors, Donations, Departments 
+WHERE Departments.ID = Donations.DepartmentID 
+AND Doctors.DepartmentID = Departments.ID
+AND Donations.Amount > 100000;
