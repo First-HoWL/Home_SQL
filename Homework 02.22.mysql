@@ -1,0 +1,62 @@
+CREATE TABLE Teachers (
+  ID INT AUTO_INCREMENT KEY,
+  EmploymentDate DATE,
+  Name VARCHAR(100),
+  Premium DECIMAL,
+  Salary DECIMAL,
+  Surname VARCHAR(100)
+);
+
+CREATE TABLE Faculties (
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100)
+);
+
+CREATE TABLE Departments (
+  ID INT AUTO_INCREMENT KEY,
+  Financing DECIMAL,
+  Name VARCHAR(100)
+);
+
+CREATE TABLE Groupss (
+  ID INT AUTO_INCREMENT KEY,
+  Name VARCHAR(100),
+  Rating INT,
+  Years INT
+);
+
+INSERT INTO Teachers (EmploymentDate, Name, Premium, Salary, Surname) VALUES
+('1997-09-01', 'Ivan', 500.00, 3000.00, 'Ivanov'),
+('1992-06-15', 'Petr', 700.00, 3500.00, 'Petrov'),
+('2001-08-21', 'Anna', 600.00, 3200.00, 'Sidorova'),
+('1990-02-11', 'Maria', 550.00, 3100.00, 'Kuznetsova'),
+('2002-12-05', 'Sergey', 800.00, 4000.00, 'Smirnov');
+
+INSERT INTO Faculties (Name) VALUES
+('Engineering'),
+('Mathematics'),
+('Physics'),
+('Computer Science'),
+('Economics');
+
+INSERT INTO Departments (Financing, Name) VALUES
+(50000.00, 'Software Engineering'),
+(40000.00, 'Applied Mathematics'),
+(45000.00, 'Theoretical Physics'),
+(55000.00, 'Artificial Intelligence'),
+(30000.00, 'Financial Analysis');
+
+INSERT INTO Groupss (Name, Rating, Years) VALUES
+('Group A', 5, 3),
+('Group B', 2, 4),
+('Group C', 3, 2),
+('Group D', 4, 3),
+('Group E', 4, 4);
+
+
+
+SELECT * FROM Teachers;
+SELECT * FROM Departments;
+SELECT * FROM Groupss;
+SELECT * FROM Faculties;
+
