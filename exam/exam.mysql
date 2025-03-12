@@ -1,0 +1,109 @@
+CREATE TABLE Products (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255),
+    Price DECIMAL,
+    Category VARCHAR(100),
+    StockQuantity INT
+);
+
+CREATE TABLE Clients (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100),
+    Phone VARCHAR(20)
+);
+
+CREATE TABLE Orders (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    ClientID INT,
+    OrderDate DATE,
+    Status VARCHAR(50),
+    FOREIGN KEY (ClientID) REFERENCES Clients(ID)
+);
+
+CREATE TABLE OrderDetails (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    OrderID INT,
+    ProductID INT,
+    Quantity INT,
+    FOREIGN KEY (OrderID) REFERENCES Orders(ID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ID)
+);
+
+CREATE TABLE Payments (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    OrderID INT,
+    Amount DECIMAL,
+    PaymentMethod VARCHAR(50),
+    PaymentDate DATE,
+    FOREIGN KEY (OrderID) REFERENCES Orders(ID)
+);
+
+INSERT INTO Products (Name, Price, Category, StockQuantity) VALUES
+('Laptop', 15000.00, 'Electronics', 10),
+('Smartphone', 8000.00, 'Electronics', 15),
+('Tablet', 7000.00, 'Electronics', 5),
+('Headphones', 1200.00, 'Accessories', 20),
+('Mouse', 600.00, 'Accessories', 30);
+
+INSERT INTO Clients (Name, Phone) VALUES
+('Ivan Petrov', '0503566423'),
+('Maria Ivanova', '0671234567'),
+('Oleg Sidorov', '0951234567');
+
+INSERT INTO Orders (ClientID, OrderDate, Status) VALUES
+(1, '2024-03-01', 'Pending'),
+(2, '2024-03-02', 'Shipped'),
+(3, '2024-03-03', 'Delivered'),
+(1, '2024-03-04', 'Delivered'),
+(2, '2024-03-05', 'Shipped');
+
+INSERT INTO OrderDetails (OrderID, ProductID, Quantity) VALUES
+(1, 1, 1),
+(1, 4, 2),
+(2, 2, 1),
+(3, 3, 1),
+(3, 5, 3),
+(4, 2, 1),
+(5, 1, 2);
+
+INSERT INTO Payments (OrderID, Amount, PaymentMethod, PaymentDate) VALUES
+(1, 16200.00, 'Credit Card', '2024-03-01'),
+(2, 8000.00, 'PayPal', '2024-03-02'),
+(3, 8800.00, 'Bank Transfer', '2024-03-03'),
+(1, 5000.00, 'Debit Card', '2024-03-04'),
+(2, 12000.00, 'Cryptocurrency', '2024-03-05'),
+(3, 4500.00, 'Cash', '2024-03-06'),
+(1, 7000.00, 'Bank Transfer', '2024-03-07');
+/*
+-- 1
+
+SELECT Products.Name, Products.Price FROM Products WHERE Products.Price >= 1500;
+
+-- 2
+
+SELECT SUM(Payments.Amount), Clients.Name FROM Payments, Clients, Orders
+WHERE Payments.OrderID = Orders.ID
+AND Orders.ClientID = Clients.ID
+GROUP BY Payments.OrderID;
+
+-- 3
+
+SELECT Products.Name, Products.StockQuantity 
+FROM Products 
+WHERE Products.StockQuantity <= 10;
+*/
+-- 4
+
+SELECT COUNT(OrderDetails.ProductID)
+FROM OrderDetails
+GROUP BY OrderDetails.ProductID;
+
+
+-- 5
+/*
+SELECT COUNT(Payments.OrderID), Clients.Name FROM Payments, Clients, Orders
+WHERE Payments.OrderID = Orders.ID
+AND Orders.ClientID = Clients.ID
+GROUP BY Payments.OrderID
+HAVING COUNT(Payments.OrderID) >= 3;
+*/
