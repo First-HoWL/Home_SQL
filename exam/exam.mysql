@@ -48,14 +48,15 @@ INSERT INTO Products (Name, Price, Category, StockQuantity) VALUES
 INSERT INTO Clients (Name, Phone) VALUES
 ('Ivan Petrov', '0503566423'),
 ('Maria Ivanova', '0671234567'),
-('Oleg Sidorov', '0951234567');
+('Oleg Sidorov', '0951234567'),
+('Ivan Ivanov', '0661336447');
 
 INSERT INTO Orders (ClientID, OrderDate, Status) VALUES
-(1, '2024-03-01', 'Pending'),
-(2, '2024-03-02', 'Shipped'),
-(3, '2024-03-03', 'Delivered'),
-(1, '2024-03-04', 'Delivered'),
-(2, '2024-03-05', 'Shipped');
+(1, '2025-03-01', 'Pending'),
+(2, '2025-03-02', 'Shipped'),
+(3, '2025-03-03', 'Delivered'),
+(1, '2025-03-04', 'Delivered'),
+(2, '2025-03-05', 'Shipped');
 
 INSERT INTO OrderDetails (OrderID, ProductID, Quantity) VALUES
 (1, 1, 1),
@@ -67,14 +68,14 @@ INSERT INTO OrderDetails (OrderID, ProductID, Quantity) VALUES
 (5, 1, 2);
 
 INSERT INTO Payments (OrderID, Amount, PaymentMethod, PaymentDate) VALUES
-(1, 16200.00, 'Credit Card', '2024-03-01'),
-(2, 8000.00, 'PayPal', '2024-03-02'),
+(1, 16200.00, 'Credit Card', '2025-01-01'),
+(2, 8000.00, 'PayPal', '2023-12-02'),
 (3, 8800.00, 'Bank Transfer', '2024-03-03'),
-(1, 5000.00, 'Debit Card', '2024-03-04'),
-(2, 12000.00, 'Cryptocurrency', '2024-03-05'),
-(3, 4500.00, 'Cash', '2024-03-06'),
-(1, 7000.00, 'Bank Transfer', '2024-03-07');
-/*
+(1, 5000.00, 'Debit Card', '2025-03-04'),
+(2, 12000.00, 'Cryptocurrency', '2025-03-05'),
+(3, 4500.00, 'Cash', '2025-02-06'),
+(1, 7000.00, 'Bank Transfer', '2023-02-07');
+
 -- 1
 
 SELECT Products.Name, Products.Price FROM Products WHERE Products.Price >= 1500;
@@ -91,19 +92,61 @@ GROUP BY Payments.OrderID;
 SELECT Products.Name, Products.StockQuantity 
 FROM Products 
 WHERE Products.StockQuantity <= 10;
-*/
+
 -- 4
 
-SELECT COUNT(OrderDetails.ProductID)
-FROM OrderDetails
-GROUP BY OrderDetails.ProductID;
+SELECT SUM(OrderDetails.Quantity) AS TotalSold, Products.Name
+FROM OrderDetails, Products
+WHERE Products.ID = OrderDetails.ProductID
+GROUP BY OrderDetails.ProductID
+ORDER BY TotalSold DESC
+LIMIT 1;
 
 
 -- 5
-/*
+
 SELECT COUNT(Payments.OrderID), Clients.Name FROM Payments, Clients, Orders
 WHERE Payments.OrderID = Orders.ID
 AND Orders.ClientID = Clients.ID
 GROUP BY Payments.OrderID
 HAVING COUNT(Payments.OrderID) >= 3;
-*/
+
+
+-- 6 
+
+SELECT Orders.ID, CONCAT(Products.Name, ' x' ,OrderDetails.Quantity) AS Product
+FROM OrderDetails, Orders, Products
+WHERE Orders.ID = OrderDetails.OrderID
+AND OrderDetails.ProductID = Products.ID
+ORDER BY Orders.ID ASC;
+
+
+-- 7
+
+SELECT Orders.ID AS Orders, Payments.PaymentDate, Payments.ID AS Payment
+From Orders, Payments
+WHERE Orders.ID = Payments.OrderID
+AND Payments.PaymentDate >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH);
+
+
+
+-- 8 
+SELECT Orders.ID, AVG(Payments.Amount) AS AverageOrderCost
+FROM Orders
+JOIN Payments ON Orders.ID = Payments.OrderID
+GROUP BY Orders.ID;
+
+
+-- 9
+
+SELECT Clients.Name
+FROM Clients
+LEFT JOIN Orders ON Clients.ID = Orders.ClientID
+WHERE Orders.ID IS NULL;
+
+-- 10
+
+SELECT Orders.ID, Orders.Status 
+FROM Orders 
+WHERE Orders.Status != 'Delivered';
+
