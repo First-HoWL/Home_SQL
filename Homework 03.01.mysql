@@ -1,0 +1,123 @@
+CREATE TABLE Faculties (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Dean VARCHAR(100),
+    Name VARCHAR(100)
+);
+
+CREATE TABLE Departments (
+    Id INT KEY AUTO_INCREMENT,
+    Financing DECIMAL,
+    Name VARCHAR(100)
+);
+
+CREATE TABLE Teachers (
+    Id INT KEY AUTO_INCREMENT,
+    EmploymentDate DATE,
+    IsAssistant BOOL,
+    IsProfessor BOOL,
+    Name VARCHAR(100),
+    Position VARCHAR(100),
+    Premium DECIMAL,
+    Salary DECIMAL,
+    Surname VARCHAR(100)
+);
+
+CREATE TABLE Groupss (
+    Id INT KEY AUTO_INCREMENT,
+    Name VARCHAR(100),
+    Rating INT,
+    Years INT
+);
+
+                 
+INSERT INTO Faculties (Dean, Name) VALUES
+('Иванов И.И.', 'Информатика'),
+('Петров П.П.', 'Математика'),
+('Сидоров С.С.','Computer Science');
+
+
+INSERT INTO Departments (Financing, Name) VALUES
+(15000, 'Программирование'),
+(12000, 'Анализ данных'),
+(30000, 'Software Development');
+
+
+INSERT INTO Teachers (EmploymentDate, IsAssistant, IsProfessor, Name, Position, Premium, Salary, Surname) VALUES
+('2005-09-01', 1, 0, 'Сидоров А.А.', 'Ассистент', 500, 1500, 'Сидоров'),
+('2010-09-01', 0, 1, 'Васечкин В.В.', 'Профессор', 1000, 3000, 'Васечкин'),
+('2000-09-01', 1, 0, 'Глинский Г.Д.', 'Ассистент', 200, 1000, 'Глинский'),
+('1999-09-01', 0, 1, 'Кошкин К.Е.', 'Профессор', 1000, 2000, 'Кошкин');
+
+
+INSERT INTO Groupss (Name, Rating, Years) VALUES
+('ИВ-11', 4, 1),
+('МТ-21', 3, 2),
+('ИВ-51', 2, 5),
+('МТ-52', 5, 5);
+
+
+-- 1
+
+SELECT * FROM Departments 
+ORDER BY Id DESC;
+
+-- 2
+SELECT Name, Rating FROM Groupss;
+
+-- 3
+SELECT Surname, (Salary / Premium) * 100, (Salary / (Salary + Premium)) * 100 FROM Teachers;
+
+-- 4
+SELECT CONCAT('Декан факультета ', Name, ' - ', Dean) FROM Faculties;
+
+-- 5
+SELECT Surname FROM Teachers 
+WHERE Position = 'Профессор' 
+AND Salary > 1050;
+
+-- 6
+SELECT Name, Financing FROM Departments 
+WHERE Financing < 11000 
+OR Financing > 25000;
+
+-- 7
+SELECT Name FROM Faculties 
+WHERE Name != 'Computer Science';
+
+-- 8
+SELECT Surname, Position FROM Teachers
+WHERE Position != 'Профессор';
+
+-- 9
+SELECT Surname, Position, Salary, Premium FROM Teachers 
+WHERE Position = 'Ассистент' 
+AND Premium BETWEEN 160 AND 550;
+
+-- 10
+SELECT Surname, Salary FROM Teachers 
+WHERE Position = 'Ассистент';
+
+-- 11
+SELECT Surname, Position, EmploymentDate FROM Teachers 
+WHERE EmploymentDate < '2000-01-01';
+
+-- 12
+SELECT Name AS 'Название кафедры' FROM Departments
+WHERE Name < 'Software Development' 
+ORDER BY Name;
+
+-- 13
+SELECT Surname, Salary + Premium FROM Teachers 
+WHERE Position = 'Ассистент' 
+AND (Salary + Premium) <= 1200;
+
+-- 14
+SELECT Name FROM Groupss 
+WHERE Year = 5 
+AND Rating BETWEEN 2 AND 4;
+
+-- 15
+SELECT Surname FROM Teachers 
+WHERE Position = 'Ассистент' 
+AND (Salary < 550 OR Premium < 200);
+
