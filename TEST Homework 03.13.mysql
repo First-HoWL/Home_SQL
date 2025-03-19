@@ -1,0 +1,156 @@
+CREATE TABLE Curators (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Surname VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Faculties (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Financing DECIMAL NOT NULL CHECK (Financing >= 0) DEFAULT 0
+);
+
+CREATE TABLE Departments (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Financing DECIMAL NOT NULL CHECK (Financing >= 0) DEFAULT 0,
+    FacultyId INT NOT NULL,
+    FOREIGN KEY (FacultyId) REFERENCES Faculties(Id)
+);
+
+CREATE TABLE Groupss (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(10) NOT NULL,
+    Year INT NOT NULL CHECK (Year BETWEEN 1 AND 5),
+    DepartmentId INT NOT NULL,
+    FOREIGN KEY (DepartmentId) REFERENCES Departments(Id)
+);
+
+CREATE TABLE GroupsCurators (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    CuratorId INT NOT NULL,
+    GroupId INT NOT NULL,
+    FOREIGN KEY (CuratorId) REFERENCES Curators(Id),
+    FOREIGN KEY (GroupId) REFERENCES Groupss(Id)
+);
+
+CREATE TABLE Teachers (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255) NOT NULL,
+    Surname VARCHAR(255) NOT NULL,
+    Salary DECIMAL NOT NULL CHECK (Salary > 0)
+);
+
+CREATE TABLE Subjects (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE Lectures (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    LectureRoom VARCHAR(100) NOT NULL,
+    SubjectId INT NOT NULL,
+    TeacherId INT NOT NULL,
+    FOREIGN KEY (SubjectId) REFERENCES Subjects(Id),
+    FOREIGN KEY (TeacherId) REFERENCES Teachers(Id)
+);
+
+CREATE TABLE GroupsLectures (
+    Id INT PRIMARY KEY AUTO_INCREMENT,
+    GroupId INT NOT NULL,
+    LectureId INT NOT NULL,
+    FOREIGN KEY (GroupId) REFERENCES Groupss(Id),
+    FOREIGN KEY (LectureId) REFERENCES Lectures(Id)
+);
+
+-- Заполнение таблиц тестовыми данными
+INSERT INTO Faculties (Name, Financing) VALUES ('Computer Science', 500000), ('Mathematics', 300000);
+
+INSERT INTO Departments (Name, Financing, FacultyId) VALUES 
+('Software Engineering', 200000, 1), 
+('Data Science', 150000, 1), 
+('Pure Math', 100000, 2);
+
+INSERT INTO Groupss (Name, Year, DepartmentId) VALUES 
+('N101', 1, 1), ('N102', 2, 1), ('N107', 3, 2);
+
+INSERT INTO Curators (Name, Surname) VALUES ('John', 'Doe'), ('Anna', 'Smith');
+INSERT INTO GroupsCurators (CuratorId, GroupId) VALUES (1, 1), (2, 2);
+
+INSERT INTO Teachers (Name, Surname, Salary) VALUES ('Samantha', 'Adams', 80000), ('Robert', 'Brown', 90000);
+INSERT INTO Subjects (Name) VALUES ('Database Theory'), ('Calculus');
+INSERT INTO Lectures (LectureRoom, SubjectId, TeacherId) VALUES ('B103', 1, 1), ('A201', 2, 2);
+INSERT INTO GroupsLectures (GroupId, LectureId) VALUES (1, 1), (2, 2);
+
+-- 1. Вивести всі можливі пари рядків викладачів та груп.
+SELECT Teachers.Name, Teachers.Surname, Groupss.Name AS GroupName
+FROM Teachers CROSS JOIN Groupss;
+
+-- 2. Вивести назви факультетів, фонд фінансування кафедр яких перевищує фонд фінансування факультету.
+
+SELECT Faculties.Name
+FROM Faculties
+WHERE Faculties.Financing < (
+    SELECT MAX(Departments.Financing)
+    FROM Departments
+    WHERE Departments.FacultyId = Faculties.Id
+);
+
+-- 3. Вивести прізвища кураторів груп та назви груп, які вони курирують.
+SELECT Curators.Surname, Groupss.Name AS GroupName
+FROM Curators
+JOIN GroupsCurators ON Curators.Id = GroupsCurators.CuratorId
+JOIN Groupss ON GroupsCurators.GroupId = Groupss.Id;
+
+-- 4. Вивести імена та прізвища викладачів, які читають лекції у групі “P107”.
+SELECT DISTINCT Teachers.Name, Teachers.Surname
+FROM Teachers
+JOIN Lectures ON Teachers.Id = Lectures.TeacherId
+JOIN GroupsLectures ON Lectures.Id = GroupsLectures.LectureId
+JOIN Groupss ON GroupsLectures.GroupId = Groupss.Id
+WHERE Groupss.Name = 'N107';
+
+-- 5. Вивести прізвища викладачів та назви факультетів, на яких вони читають лекції.
+SELECT DISTINCT Teachers.Surname, Faculties.Name AS FacultyName
+FROM Teachers
+JOIN Lectures ON Teachers.Id = Lectures.TeacherId
+JOIN GroupsLectures ON Lectures.Id = GroupsLectures.LectureId
+JOIN Groupss ON GroupsLectures.GroupId = Groupss.Id
+JOIN Departments ON Groupss.DepartmentId = Departments.Id
+JOIN Faculties ON Departments.FacultyId = Faculties.Id;
+
+-- 6. Вивести назви кафедр та назви груп, які до них належать.
+SELECT Departments.Name AS DepartmentName, Groupss.Name AS GroupName
+FROM Departments
+JOIN Groupss ON Departments.Id = Groupss.DepartmentId;
+
+-- 7. Вивести назви дисциплін, які читає викладач “Samantha Adams”.
+SELECT DISTINCT Subjects.Name
+FROM Subjects
+JOIN Lectures ON Subjects.Id = Lectures.SubjectId
+JOIN Teachers ON Lectures.TeacherId = Teachers.Id
+WHERE Teachers.Name = 'Samantha' AND Teachers.Surname = 'Adams';
+
+-- 8. Вивести назви кафедр, де читається дисципліна “Database Theory”.
+SELECT DISTINCT Departments.Name
+FROM Departments
+JOIN Groupss ON Departments.Id = Groupss.DepartmentId
+JOIN GroupsLectures ON Groupss.Id = GroupsLectures.GroupId
+JOIN Lectures ON GroupsLectures.LectureId = Lectures.Id
+JOIN Subjects ON Lectures.SubjectId = Subjects.Id
+WHERE Subjects.Name = 'Database Theory';
+
+-- 9. Вивести назви груп, що належать до факультету Computer Science.
+SELECT Groupss.Name
+FROM Groupss
+JOIN Departments ON Groupss.DepartmentId = Departments.Id
+JOIN Faculties ON Departments.FacultyId = Faculties.Id
+WHERE Faculties.Name = 'Computer Science';
+
+-- 10. Вивести назви груп 5-го курсу, а також назву факультетів, до яких вони належать.
+SELECT Groupss.Name AS GroupName, Faculties.Name AS FacultyName
+FROM Groupss
+JOIN Departments ON Groupss.DepartmentId = Departments.Id
+JOIN Faculties ON Departments.FacultyId = Faculties.Id
+WHERE Groupss.Year = 5;
+
