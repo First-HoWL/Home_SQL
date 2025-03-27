@@ -1,0 +1,174 @@
+CREATE TABLE Faculties (
+    Id INT AUTO_INCREMENT KEY,
+    Name VARCHAR(100)
+);
+
+CREATE TABLE Departments (
+    Id INT AUTO_INCREMENT KEY,
+    Financing DECIMAL DEFAULT 0,
+    Name VARCHAR(100),
+    FacultyId INT,
+    FOREIGN KEY (FacultyId) REFERENCES Faculties(Id)
+);
+
+CREATE TABLE Teachers (
+    Id INT AUTO_INCREMENT KEY,
+    Name VARCHAR(255),
+    Salary DECIMAL,
+  	Surname VARCHAR(255)
+);
+
+CREATE TABLE Groupss (
+    Id INT AUTO_INCREMENT KEY,
+    Name VARCHAR(100),
+    Years INT,
+    DepartmentId INT,
+    FOREIGN KEY (DepartmentId) REFERENCES Departments(Id)
+);
+
+CREATE TABLE Subjects (
+    Id INT AUTO_INCREMENT KEY,
+    Name VARCHAR(100)
+);
+
+CREATE TABLE Lectures (
+    Id INT AUTO_INCREMENT KEY,
+  	DayOfWeek INT,
+    LectureRoom VARCHAR(255),
+    SubjectId INT,
+    TeacherId INT,
+    FOREIGN KEY (SubjectId) REFERENCES Subjects(Id),
+    FOREIGN KEY (TeacherId) REFERENCES Teachers(Id)
+);
+
+CREATE TABLE GroupsLectures (
+    Id INT AUTO_INCREMENT KEY,
+    GroupId INT,
+    LectureId INT,
+    FOREIGN KEY (GroupId) REFERENCES Groupss(Id),
+    FOREIGN KEY (LectureId) REFERENCES Lectures(Id)
+);
+
+-- Заповнення Faculties
+INSERT INTO Faculties (Name) VALUES 
+('Факультет комп’ютерних наук'), 
+('Факультет математики'), 
+('Computer Science');
+
+-- Заповнення Departments
+INSERT INTO Departments (Name, Financing, FacultyId) VALUES 
+('Кафедра програмування', 50000, 1), 
+('Кафедра прикладної математики', 45000, 2), 
+('Software Development', 40000, 3);
+
+-- Заповнення Teachers
+INSERT INTO Teachers (Name, Surname, Salary) VALUES 
+('Іван', 'Петров', 25000), 
+('Jack', 'Underhill', 27000), 
+('Dave', 'McQueen', 30000);
+
+-- Заповнення Groups
+INSERT INTO Groupss (Name, Years, DepartmentId) VALUES 
+('КН-11', 1, 1), 
+('КН-21', 2, 1), 
+('ПМ-31', 3, 2), 
+('ФТ-41', 4, 3);
+
+-- Заповнення Subjects
+INSERT INTO Subjects (Name) VALUES 
+('Алгоритми та структури даних'), 
+('Математичний аналіз'), 
+('Квантова механіка');
+
+-- Заповнення Lectures
+INSERT INTO Lectures (DayOfWeek, LectureRoom, SubjectId, TeacherId) VALUES 
+(1, 'Ауд. 101', 1, 1), 
+(3, 'Ауд. 202', 2, 2), 
+(5, 'D201', 3, 3);
+
+-- Заповнення GroupsLectures
+INSERT INTO GroupsLectures (GroupId, LectureId) VALUES 
+(1, 1), 
+(2, 1), 
+(3, 2), 
+(4, 3);
+
+-- 1
+SELECT COUNT(*) 
+FROM Teachers
+JOIN Departments ON Teachers.Id = Departments.Id
+WHERE Departments.Name = 'Software Development';
+-- 2
+SELECT COUNT(*)
+FROM Lectures
+JOIN Teachers ON Lectures.TeacherId = Teachers.Id
+WHERE Teachers.Name = 'Dave' AND Teachers.Surname = 'McQueen';
+-- 3
+SELECT COUNT(*)
+FROM Lectures
+WHERE LectureRoom = 'D201';
+-- 4
+SELECT LectureRoom, COUNT(*)
+FROM Lectures
+GROUP BY LectureRoom;
+-- 5
+SELECT COUNT(Groupss.Id) AS StudentCount
+FROM Groupss
+JOIN GroupsLectures ON Groupss.Id = GroupsLectures.GroupId
+JOIN Lectures ON GroupsLectures.LectureId = Lectures.Id
+JOIN Teachers ON Lectures.TeacherId = Teachers.Id
+WHERE Teachers.Name = 'Jack' AND Teachers.Surname = 'Underhill';
+-- 6
+SELECT AVG(Teachers.Salary) AS AvgSalary
+FROM Teachers
+JOIN Departments ON Teachers.Id = Departments.Id
+JOIN Faculties ON Departments.FacultyId = Faculties.Id
+WHERE Faculties.Name = 'Computer Science';
+-- 7
+SELECT COUNT(GroupsLectures.GroupId) AS MinStudents
+FROM Groupss
+LEFT JOIN GroupsLectures ON Groupss.Id = GroupsLectures.GroupId
+GROUP BY Groupss.Id
+ORDER BY MinStudents ASC
+LIMIT 1;
+
+SELECT COUNT(GroupsLectures.GroupId) AS MaxStudents
+FROM Groupss
+LEFT JOIN GroupsLectures ON Groupss.Id = GroupsLectures.GroupId
+GROUP BY Groupss.Id
+ORDER BY MaxStudents DESC
+LIMIT 1;
+
+-- 8
+SELECT AVG(Financing) AS AvgFinancing FROM Departments;
+-- 9
+SELECT CONCAT(Teachers.Name, ' ', Teachers.Surname) AS FullName, COUNT(Lectures.SubjectId) AS SubjectsTaught
+FROM Teachers
+LEFT JOIN Lectures ON Teachers.Id = Lectures.TeacherId
+GROUP BY Teachers.Id;
+-- 10
+SELECT DayOfWeek, COUNT(*) AS LectureCount
+FROM Lectures
+GROUP BY DayOfWeek
+ORDER BY DayOfWeek;
+-- 11
+SELECT Lectures.LectureRoom, COUNT(DISTINCT Departments.Id) AS DepartmentCount
+FROM Lectures
+JOIN Teachers ON Lectures.TeacherId = Teachers.Id
+JOIN Departments ON Teachers.Id = Departments.FacultyId
+GROUP BY Lectures.LectureRoom;
+-- 12
+SELECT Faculties.Name AS FacultyName, COUNT(DISTINCT Subjects.Id) AS SubjectCount
+FROM Faculties
+JOIN Departments ON Faculties.Id = Departments.FacultyId
+JOIN Groupss ON Departments.Id = Groupss.DepartmentId
+JOIN GroupsLectures ON Groupss.Id = GroupsLectures.GroupId
+JOIN Lectures ON GroupsLectures.LectureId = Lectures.Id
+JOIN Subjects ON Lectures.SubjectId = Subjects.Id
+GROUP BY Faculties.Id;
+-- 13
+SELECT CONCAT(Teachers.Name, ' ', Teachers.Surname) AS FullName, Lectures.LectureRoom, COUNT(*) AS LectureCount
+FROM Lectures
+JOIN Teachers ON Lectures.TeacherId = Teachers.Id
+GROUP BY Teachers.Id, Lectures.LectureRoom
+ORDER BY LectureCount DESC;
