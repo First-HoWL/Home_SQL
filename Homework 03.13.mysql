@@ -63,7 +63,6 @@ CREATE TABLE GroupsLectures (
     FOREIGN KEY (LectureId) REFERENCES Lectures(Id)
 );
 
--- Заполнение таблиц тестовыми данными
 INSERT INTO Faculties (Name, Financing) VALUES ('Computer Science', 500000), ('Mathematics', 300000);
 
 INSERT INTO Departments (Name, Financing, FacultyId) VALUES 
@@ -82,11 +81,11 @@ INSERT INTO Subjects (Name) VALUES ('Database Theory'), ('Calculus');
 INSERT INTO Lectures (LectureRoom, SubjectId, TeacherId) VALUES ('B103', 1, 1), ('A201', 2, 2);
 INSERT INTO GroupsLectures (GroupId, LectureId) VALUES (1, 1), (2, 2);
 
--- 1. Вивести всі можливі пари рядків викладачів та груп.
+-- 1
 SELECT Teachers.Name, Teachers.Surname, Groupss.Name AS GroupName
 FROM Teachers CROSS JOIN Groupss;
 
--- 2. Вивести назви факультетів, фонд фінансування кафедр яких перевищує фонд фінансування факультету.
+-- 2
 
 SELECT Faculties.Name
 FROM Faculties
@@ -96,13 +95,13 @@ WHERE Faculties.Financing < (
     WHERE Departments.FacultyId = Faculties.Id
 );
 
--- 3. Вивести прізвища кураторів груп та назви груп, які вони курирують.
+-- 3
 SELECT Curators.Surname, Groupss.Name AS GroupName
 FROM Curators
 JOIN GroupsCurators ON Curators.Id = GroupsCurators.CuratorId
 JOIN Groupss ON GroupsCurators.GroupId = Groupss.Id;
 
--- 4. Вивести імена та прізвища викладачів, які читають лекції у групі “P107”.
+-- 4
 SELECT DISTINCT Teachers.Name, Teachers.Surname
 FROM Teachers
 JOIN Lectures ON Teachers.Id = Lectures.TeacherId
@@ -110,7 +109,7 @@ JOIN GroupsLectures ON Lectures.Id = GroupsLectures.LectureId
 JOIN Groupss ON GroupsLectures.GroupId = Groupss.Id
 WHERE Groupss.Name = 'N107';
 
--- 5. Вивести прізвища викладачів та назви факультетів, на яких вони читають лекції.
+-- 5
 SELECT DISTINCT Teachers.Surname, Faculties.Name AS FacultyName
 FROM Teachers
 JOIN Lectures ON Teachers.Id = Lectures.TeacherId
@@ -119,19 +118,19 @@ JOIN Groupss ON GroupsLectures.GroupId = Groupss.Id
 JOIN Departments ON Groupss.DepartmentId = Departments.Id
 JOIN Faculties ON Departments.FacultyId = Faculties.Id;
 
--- 6. Вивести назви кафедр та назви груп, які до них належать.
+-- 6
 SELECT Departments.Name AS DepartmentName, Groupss.Name AS GroupName
 FROM Departments
 JOIN Groupss ON Departments.Id = Groupss.DepartmentId;
 
--- 7. Вивести назви дисциплін, які читає викладач “Samantha Adams”.
+-- 7
 SELECT DISTINCT Subjects.Name
 FROM Subjects
 JOIN Lectures ON Subjects.Id = Lectures.SubjectId
 JOIN Teachers ON Lectures.TeacherId = Teachers.Id
 WHERE Teachers.Name = 'Samantha' AND Teachers.Surname = 'Adams';
 
--- 8. Вивести назви кафедр, де читається дисципліна “Database Theory”.
+-- 8
 SELECT DISTINCT Departments.Name
 FROM Departments
 JOIN Groupss ON Departments.Id = Groupss.DepartmentId
@@ -140,17 +139,16 @@ JOIN Lectures ON GroupsLectures.LectureId = Lectures.Id
 JOIN Subjects ON Lectures.SubjectId = Subjects.Id
 WHERE Subjects.Name = 'Database Theory';
 
--- 9. Вивести назви груп, що належать до факультету Computer Science.
+-- 9
 SELECT Groupss.Name
 FROM Groupss
 JOIN Departments ON Groupss.DepartmentId = Departments.Id
 JOIN Faculties ON Departments.FacultyId = Faculties.Id
 WHERE Faculties.Name = 'Computer Science';
 
--- 10. Вивести назви груп 5-го курсу, а також назву факультетів, до яких вони належать.
+-- 10
 SELECT Groupss.Name AS GroupName, Faculties.Name AS FacultyName
 FROM Groupss
 JOIN Departments ON Groupss.DepartmentId = Departments.Id
 JOIN Faculties ON Departments.FacultyId = Faculties.Id
 WHERE Groupss.Year = 5;
-
