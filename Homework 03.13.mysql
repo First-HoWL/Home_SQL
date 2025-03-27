@@ -1,69 +1,71 @@
 CREATE TABLE Curators (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(255) NOT NULL,
-    Surname VARCHAR(255) NOT NULL
+    Name VARCHAR(255),
+    Surname VARCHAR(255)
 );
 
 CREATE TABLE Faculties (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(100) NOT NULL,
-    Financing DECIMAL NOT NULL CHECK (Financing >= 0) DEFAULT 0
+    Name VARCHAR(100),
+    Financing DECIMAL
 );
 
 CREATE TABLE Departments (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(100) NOT NULL,
-    Financing DECIMAL NOT NULL CHECK (Financing >= 0) DEFAULT 0,
-    FacultyId INT NOT NULL,
+    Name VARCHAR(100),
+    Financing DECIMAL,
+    FacultyId INT,
     FOREIGN KEY (FacultyId) REFERENCES Faculties(Id)
 );
 
 CREATE TABLE Groupss (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(10) NOT NULL,
-    Year INT NOT NULL CHECK (Year BETWEEN 1 AND 5),
-    DepartmentId INT NOT NULL,
+    Name VARCHAR(10),
+    Year INT),
+    DepartmentId INT,
     FOREIGN KEY (DepartmentId) REFERENCES Departments(Id)
 );
 
 CREATE TABLE GroupsCurators (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    CuratorId INT NOT NULL,
-    GroupId INT NOT NULL,
+    CuratorId INT,
+    GroupId INT,
     FOREIGN KEY (CuratorId) REFERENCES Curators(Id),
     FOREIGN KEY (GroupId) REFERENCES Groupss(Id)
 );
 
 CREATE TABLE Teachers (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(255) NOT NULL,
-    Surname VARCHAR(255) NOT NULL,
-    Salary DECIMAL NOT NULL CHECK (Salary > 0)
+    Name VARCHAR(255),
+    Surname VARCHAR(255),
+    Salary DECIMAL
 );
 
 CREATE TABLE Subjects (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(100) NOT NULL UNIQUE
+    Name VARCHAR(100)
 );
 
 CREATE TABLE Lectures (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    LectureRoom VARCHAR(100) NOT NULL,
-    SubjectId INT NOT NULL,
-    TeacherId INT NOT NULL,
+    LectureRoom VARCHAR(100),
+    SubjectId INT,
+    TeacherId INT,
     FOREIGN KEY (SubjectId) REFERENCES Subjects(Id),
     FOREIGN KEY (TeacherId) REFERENCES Teachers(Id)
 );
 
 CREATE TABLE GroupsLectures (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    GroupId INT NOT NULL,
-    LectureId INT NOT NULL,
+    GroupId INT,
+    LectureId INT,
     FOREIGN KEY (GroupId) REFERENCES Groupss(Id),
     FOREIGN KEY (LectureId) REFERENCES Lectures(Id)
 );
 
-INSERT INTO Faculties (Name, Financing) VALUES ('Computer Science', 500000), ('Mathematics', 300000);
+INSERT INTO Faculties (Name, Financing) VALUES 
+('Computer Science', 500000), 
+('Mathematics', 300000);
 
 INSERT INTO Departments (Name, Financing, FacultyId) VALUES 
 ('Software Engineering', 200000, 1), 
@@ -71,15 +73,30 @@ INSERT INTO Departments (Name, Financing, FacultyId) VALUES
 ('Pure Math', 100000, 2);
 
 INSERT INTO Groupss (Name, Year, DepartmentId) VALUES 
-('N101', 1, 1), ('N102', 2, 1), ('N107', 3, 2);
+('N101', 1, 1), 
+('N102', 2, 1), 
+('N107', 3, 2);
 
-INSERT INTO Curators (Name, Surname) VALUES ('John', 'Doe'), ('Anna', 'Smith');
-INSERT INTO GroupsCurators (CuratorId, GroupId) VALUES (1, 1), (2, 2);
+INSERT INTO Curators (Name, Surname) VALUES 
+('John', 'Doe'), 
+('Anna', 'Smith');
 
-INSERT INTO Teachers (Name, Surname, Salary) VALUES ('Samantha', 'Adams', 80000), ('Robert', 'Brown', 90000);
-INSERT INTO Subjects (Name) VALUES ('Database Theory'), ('Calculus');
-INSERT INTO Lectures (LectureRoom, SubjectId, TeacherId) VALUES ('B103', 1, 1), ('A201', 2, 2);
-INSERT INTO GroupsLectures (GroupId, LectureId) VALUES (1, 1), (2, 2);
+INSERT INTO GroupsCurators (CuratorId, GroupId) VALUES 
+(1, 1), 
+(2, 2);
+
+INSERT INTO Teachers (Name, Surname, Salary) VALUES 
+('Samantha', 'Adams', 80000), 
+('Robert', 'Brown', 90000);
+INSERT INTO Subjects (Name) VALUES 
+('Database Theory'), 
+('Calculus');
+INSERT INTO Lectures (LectureRoom, SubjectId, TeacherId) VALUES 
+('B103', 1, 1), 
+('A201', 2, 2);
+INSERT INTO GroupsLectures (GroupId, LectureId) VALUES 
+(1, 1), 
+(2, 2);
 
 -- 1
 SELECT Teachers.Name, Teachers.Surname, Groupss.Name AS GroupName
