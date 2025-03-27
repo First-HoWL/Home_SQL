@@ -21,7 +21,7 @@ CREATE TABLE Departments (
 CREATE TABLE Groupss (
     Id INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(10),
-    Year INT),
+    Year INT,
     DepartmentId INT,
     FOREIGN KEY (DepartmentId) REFERENCES Departments(Id)
 );
